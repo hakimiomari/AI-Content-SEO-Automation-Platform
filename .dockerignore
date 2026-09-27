@@ -1,0 +1,53 @@
+# Dependencies & caches
+node_modules
+**/node_modules
+.pnpm-store
+.turbo
+**/.turbo
+.npm
+.cache
+
+# Build output (rebuilt inside the image)
+dist
+**/dist
+build
+**/build
+.next
+**/.next
+out
+**/out
+coverage
+**/coverage
+*.tsbuildinfo
+packages/database/generated
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+apps/web/.env.local
+
+# VCS, editors, OS
+.git
+.gitignore
+.github
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Docs & misc (not needed at runtime)
+docs
+*.md
+!README.md
+!apps/**/README.md
+!packages/**/README.md
+
+# Docker runtime data
+docker/data
+docker/*.yml
+pgl-backups
+
+# Logs
+logs
+*.log
