@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 260" width="1200" height="260" role="img" aria-labelledby="pl-title pl-desc" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title id="pl-title">The 10-step content journey</title>
+  <desc id="pl-desc">Register, Website, Project, Keywords, Brief, Article, Edit, Repurpose, Publish and Analytics as connected nodes; a glowing dot travels along the pipeline and each node pulses as the dot arrives.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#141a33"/>
+    </linearGradient>
+    <linearGradient id="trackGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="0.5" stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <style>
+      .dash { fill: none; stroke: url(#trackGrad); stroke-width: 2; stroke-opacity: .35; stroke-dasharray: 4 10; animation: flow 1.6s linear infinite; }
+      @keyframes flow { to { stroke-dashoffset: -28; } }
+      .lbl { font-size: 13px; font-weight: 600; fill: #e2e8f0; }
+      .sub { font-size: 11px; fill: #7c8aa5; }
+      .num { font-size: 13px; font-weight: 700; fill: #e2e8f0; }
+      .band { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="260" fill="url(#bg)"/>
+
+  <!-- heading -->
+  <text x="40" y="38" font-size="18" font-weight="700" fill="#e2e8f0">The 10-step content journey</text>
+  <text x="1160" y="38" text-anchor="end" font-size="11" fill="#7c8aa5">one glowing dot = one piece of content moving through the platform</text>
+
+  <!-- phase bands -->
+  <g class="band" text-anchor="middle">
+    <path d="M40,80 v-6 h280 v6" fill="none" stroke="#22d3ee" stroke-opacity="0.5"/>
+    <text x="180" y="66" fill="#67e8f9">SET UP</text>
+    <path d="M400,80 v-6 h400 v6" fill="none" stroke="#a78bfa" stroke-opacity="0.5"/>
+    <text x="600" y="66" fill="#c4b5fd">RESEARCH &amp; CREATE</text>
+    <path d="M880,80 v-6 h280 v6" fill="none" stroke="#34d399" stroke-opacity="0.5"/>
+    <text x="1020" y="66" fill="#6ee7b7">PUBLISH &amp; LEARN</text>
+  </g>
+
+  <!-- track -->
+  <path id="track" d="M60,120 L1140,120" fill="none" stroke="#1f2a4a" stroke-width="4" stroke-linecap="round"/>
+  <path class="dash" d="M60,120 L1140,120"/>
+
+  <!-- nodes: cyan (1-3), violet (4-7), green (8-10) -->
+  <!-- 1 Register -->
+  <g>
+    <circle cx="60" cy="120" r="24" fill="none" stroke="#67e8f9" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;44;44" keyTimes="0;0.06;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.9;0;0" keyTimes="0;0.06;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="60" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#0e7490;#182238;#182238" keyTimes="0;0.15;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#67e8f9;#3b4a6b;#3b4a6b" keyTimes="0;0.15;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="60" y="125" text-anchor="middle">1</text>
+    <text class="lbl" x="60" y="168" text-anchor="middle">Register</text>
+    <text class="sub" x="60" y="186" text-anchor="middle">company &amp; login</text>
+  </g>
+  <!-- 2 Website -->
+  <g>
+    <circle cx="180" cy="120" r="24" fill="none" stroke="#67e8f9" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.1;0.16;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.1;0.16;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="180" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#0e7490;#182238;#182238" keyTimes="0;0.1;0.12;0.25;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#67e8f9;#3b4a6b;#3b4a6b" keyTimes="0;0.1;0.12;0.25;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="180" y="125" text-anchor="middle">2</text>
+    <text class="lbl" x="180" y="168" text-anchor="middle">Website</text>
+    <text class="sub" x="180" y="186" text-anchor="middle">business profile</text>
+  </g>
+  <!-- 3 Project -->
+  <g>
+    <circle cx="300" cy="120" r="24" fill="none" stroke="#67e8f9" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.2;0.26;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.2;0.26;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="300" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#0e7490;#182238;#182238" keyTimes="0;0.2;0.22;0.35;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#67e8f9;#3b4a6b;#3b4a6b" keyTimes="0;0.2;0.22;0.35;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="300" y="125" text-anchor="middle">3</text>
+    <text class="lbl" x="300" y="168" text-anchor="middle">Project</text>
+    <text class="sub" x="300" y="186" text-anchor="middle">SEO goals</text>
+  </g>
+  <!-- 4 Keywords -->
+  <g>
+    <circle cx="420" cy="120" r="24" fill="none" stroke="#c4b5fd" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.3;0.36;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.3;0.36;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="420" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#6d28d9;#182238;#182238" keyTimes="0;0.3;0.32;0.45;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#c4b5fd;#3b4a6b;#3b4a6b" keyTimes="0;0.3;0.32;0.45;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="420" y="125" text-anchor="middle">4</text>
+    <text class="lbl" x="420" y="168" text-anchor="middle">Keywords</text>
+    <text class="sub" x="420" y="186" text-anchor="middle">AI research</text>
+  </g>
+  <!-- 5 Brief -->
+  <g>
+    <circle cx="540" cy="120" r="24" fill="none" stroke="#c4b5fd" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.4;0.46;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.4;0.46;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="540" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#6d28d9;#182238;#182238" keyTimes="0;0.4;0.42;0.55;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#c4b5fd;#3b4a6b;#3b4a6b" keyTimes="0;0.4;0.42;0.55;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="540" y="125" text-anchor="middle">5</text>
+    <text class="lbl" x="540" y="168" text-anchor="middle">Brief</text>
+    <text class="sub" x="540" y="186" text-anchor="middle">outline &amp; FAQs</text>
+  </g>
+  <!-- 6 Article -->
+  <g>
+    <circle cx="660" cy="120" r="24" fill="none" stroke="#c4b5fd" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.5;0.56;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.5;0.56;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="660" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#6d28d9;#182238;#182238" keyTimes="0;0.5;0.52;0.65;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#c4b5fd;#3b4a6b;#3b4a6b" keyTimes="0;0.5;0.52;0.65;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="660" y="125" text-anchor="middle">6</text>
+    <text class="lbl" x="660" y="168" text-anchor="middle">Article</text>
+    <text class="sub" x="660" y="186" text-anchor="middle">AI draft</text>
+  </g>
+  <!-- 7 Edit -->
+  <g>
+    <circle cx="780" cy="120" r="24" fill="none" stroke="#c4b5fd" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.6;0.66;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.6;0.66;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="780" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#6d28d9;#182238;#182238" keyTimes="0;0.6;0.62;0.75;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#c4b5fd;#3b4a6b;#3b4a6b" keyTimes="0;0.6;0.62;0.75;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="780" y="125" text-anchor="middle">7</text>
+    <text class="lbl" x="780" y="168" text-anchor="middle">Edit</text>
+    <text class="sub" x="780" y="186" text-anchor="middle">AI actions &amp; SEO score</text>
+  </g>
+  <!-- 8 Repurpose -->
+  <g>
+    <circle cx="900" cy="120" r="24" fill="none" stroke="#6ee7b7" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.7;0.76;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.7;0.76;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="900" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#047857;#182238;#182238" keyTimes="0;0.7;0.72;0.85;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#6ee7b7;#3b4a6b;#3b4a6b" keyTimes="0;0.7;0.72;0.85;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="900" y="125" text-anchor="middle">8</text>
+    <text class="lbl" x="900" y="168" text-anchor="middle">Repurpose</text>
+    <text class="sub" x="900" y="186" text-anchor="middle">social &amp; email</text>
+  </g>
+  <!-- 9 Publish -->
+  <g>
+    <circle cx="1020" cy="120" r="24" fill="none" stroke="#6ee7b7" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.8;0.86;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.8;0.86;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1020" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#047857;#182238;#182238" keyTimes="0;0.8;0.82;0.95;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#6ee7b7;#3b4a6b;#3b4a6b" keyTimes="0;0.8;0.82;0.95;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="1020" y="125" text-anchor="middle">9</text>
+    <text class="lbl" x="1020" y="168" text-anchor="middle">Publish</text>
+    <text class="sub" x="1020" y="186" text-anchor="middle">schedule → CMS</text>
+  </g>
+  <!-- 10 Analytics -->
+  <g>
+    <circle cx="1140" cy="120" r="24" fill="none" stroke="#6ee7b7" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="24;24;44;44" keyTimes="0;0.9;0.96;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.9;0.96;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="1140" cy="120" r="22" fill="#182238" stroke="#3b4a6b" stroke-width="2">
+      <animate attributeName="fill" values="#182238;#182238;#047857;#182238" keyTimes="0;0.9;0.92;1" dur="10s" repeatCount="indefinite"/>
+      <animate attributeName="stroke" values="#3b4a6b;#3b4a6b;#6ee7b7;#3b4a6b" keyTimes="0;0.9;0.92;1" dur="10s" repeatCount="indefinite"/>
+    </circle>
+    <text class="num" x="1140" y="125" text-anchor="middle">10</text>
+    <text class="lbl" x="1140" y="168" text-anchor="middle">Analytics</text>
+    <text class="sub" x="1140" y="186" text-anchor="middle">Search Console</text>
+  </g>
+
+  <!-- travelling packet + trail -->
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0.35;0.35;0;0" keyTimes="0;0.03;0.9;0.94;1" dur="10s" begin="0.36s" repeatCount="indefinite"/>
+    <circle r="2.5" fill="#c4b5fd"/>
+    <animateMotion dur="10s" begin="0.36s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.9;1" calcMode="linear"><mpath xlink:href="#track"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;0.6;0.6;0;0" keyTimes="0;0.03;0.9;0.94;1" dur="10s" begin="0.18s" repeatCount="indefinite"/>
+    <circle r="3.5" fill="#ddd6fe"/>
+    <animateMotion dur="10s" begin="0.18s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.9;1" calcMode="linear"><mpath xlink:href="#track"/></animateMotion>
+  </g>
+  <g opacity="0">
+    <animate attributeName="opacity" values="0;1;1;0;0" keyTimes="0;0.02;0.9;0.94;1" dur="10s" repeatCount="indefinite"/>
+    <circle r="12" fill="#a78bfa" opacity="0.55" filter="url(#glow)"/>
+    <circle r="5" fill="#ffffff"/>
+    <animateMotion dur="10s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.9;1" calcMode="linear"><mpath xlink:href="#track"/></animateMotion>
+  </g>
+
+  <!-- footer: entities touched along the way -->
+  <text x="600" y="236" text-anchor="middle" font-size="11" fill="#64748b" letter-spacing="0.3">Company → Website → Project → Keyword / KeywordCluster → ContentBrief → Content + ContentVersion → SEOAnalysis → SocialPost → Schedule → AnalyticsSnapshot</text>
+</svg>

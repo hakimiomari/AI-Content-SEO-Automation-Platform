@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-labelledby="ar-title ar-desc" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title id="ar-title">Runtime architecture</title>
+  <desc id="ar-desc">Browser to Nginx to Next.js and NestJS; NestJS talks to PostgreSQL, MinIO and Redis; the BullMQ worker consumes Redis, calls OpenAI and writes results back to PostgreSQL. Connectors are animated dashed lines with labelled ports.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#141a33"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.035"/>
+    </pattern>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4"/></filter>
+    <marker id="aReq" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34d399"/></marker>
+    <marker id="aData" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a78bfa"/></marker>
+    <marker id="aQ" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#22d3ee"/></marker>
+    <marker id="aAi" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#f472b6"/></marker>
+    <path id="mAi" d="M920,428 L990,428 L990,432 L920,432"/>
+    <style>
+      .box { fill: #121a30; stroke: #2a3555; stroke-width: 1.5; }
+      .ext { stroke-dasharray: 5 4; }
+      .t { font-size: 15px; font-weight: 700; fill: #e2e8f0; }
+      .s { font-size: 11px; fill: #7c8aa5; }
+      .h { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; fill: #64748b; }
+      .port { font-size: 11px; font-weight: 600; fill: #6ee7b7; }
+      .lab { font-size: 10px; fill: #94a3b8; }
+      .flow { fill: none; stroke-width: 2; stroke-dasharray: 7 6; animation: dash 1.3s linear infinite; }
+      .req { stroke: #34d399; } .data { stroke: #a78bfa; } .q { stroke: #22d3ee; } .ai { stroke: #f472b6; }
+      .slow { animation-duration: 2.2s; }
+      @keyframes dash { to { stroke-dashoffset: -26; } }
+    </style>
+  </defs>
+
+  <rect width="1200" height="520" fill="url(#bg)"/>
+  <rect width="1200" height="520" fill="url(#grid)"/>
+
+  <!-- heading -->
+  <text x="40" y="36" font-size="18" font-weight="700" fill="#e2e8f0">Runtime architecture</text>
+  <text x="1160" y="36" text-anchor="end" font-size="11" fill="#7c8aa5">Docker Compose · one container per box · Nginx terminates TLS in production</text>
+
+  <!-- column headers -->
+  <g class="h" text-anchor="middle">
+    <text x="115" y="200">CLIENT</text>
+    <text x="325" y="200">EDGE</text>
+    <text x="555" y="96">APPS</text>
+    <text x="825" y="46">DATA &amp; JOBS</text>
+    <text x="1075" y="376">EXTERNAL</text>
+  </g>
+
+  <!-- connectors (drawn first so boxes sit on top) -->
+  <path class="flow req" marker-end="url(#aReq)" d="M190,260 L250,260"/>
+  <path class="flow req" marker-end="url(#aReq)" d="M400,245 C430,245 430,155 460,155"/>
+  <path class="flow req" marker-end="url(#aReq)" d="M400,275 C430,275 430,365 460,365"/>
+  <path class="flow req slow" marker-end="url(#aReq)" d="M555,200 L555,320"/>
+  <path class="flow data" marker-end="url(#aData)" d="M650,340 C690,340 690,100 730,100"/>
+  <path class="flow data" marker-end="url(#aData)" d="M650,355 C690,355 690,210 730,210"/>
+  <path id="p7" class="flow q" marker-end="url(#aQ)" d="M650,370 C690,370 690,320 730,320"/>
+  <path id="p8" class="flow q" marker-end="url(#aQ)" d="M825,360 L825,390"/>
+  <path id="p9" class="flow ai" marker-end="url(#aAi)" d="M920,430 L990,430"/>
+  <path id="p10" class="flow data slow" marker-end="url(#aData)" d="M920,410 C965,410 965,100 920,100"/>
+
+  <!-- connector labels -->
+  <text class="lab" x="220" y="250" text-anchor="middle">HTTPS</text>
+  <text class="lab" x="565" y="256">fetch /api/v1</text>
+  <text class="lab" x="565" y="270">credentials: include</text>
+  <text class="lab" x="662" y="88">Prisma</text>
+  <text class="lab" x="662" y="200">S3 SDK</text>
+  <text class="lab" x="686" y="392" text-anchor="middle" fill="#67e8f9">enqueue</text>
+  <text class="lab" x="836" y="379">process</text>
+  <text class="lab" x="955" y="420" text-anchor="middle">prompts</text>
+  <text class="lab" x="975" y="250">writes results</text>
+  <text class="lab" x="975" y="264">+ AIUsage rows</text>
+
+  <!-- job packet travelling API → Redis → Worker → OpenAI → back → PostgreSQL -->
+  <g>
+    <circle r="8" fill="#22d3ee" opacity="0.5" filter="url(#glow)"/>
+    <circle r="3.5" fill="#ffffff"/>
+    <animate attributeName="opacity" calcMode="discrete" values="1;0" keyTimes="0;0.28" dur="6s" repeatCount="indefinite"/>
+    <animateMotion dur="6s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.28;1" calcMode="linear"><mpath xlink:href="#p7"/></animateMotion>
+  </g>
+  <g>
+    <circle r="8" fill="#22d3ee" opacity="0.5" filter="url(#glow)"/>
+    <circle r="3.5" fill="#ffffff"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.28;0.38" dur="6s" repeatCount="indefinite"/>
+    <animateMotion dur="6s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.28;0.38;1" calcMode="linear"><mpath xlink:href="#p8"/></animateMotion>
+  </g>
+  <g>
+    <circle r="8" fill="#f472b6" opacity="0.5" filter="url(#glow)"/>
+    <circle r="3.5" fill="#ffffff"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.4;0.66" dur="6s" repeatCount="indefinite"/>
+    <animateMotion dur="6s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.4;0.66;1" calcMode="linear"><mpath xlink:href="#mAi"/></animateMotion>
+  </g>
+  <g>
+    <circle r="8" fill="#a78bfa" opacity="0.5" filter="url(#glow)"/>
+    <circle r="3.5" fill="#ffffff"/>
+    <animate attributeName="opacity" calcMode="discrete" values="0;1;0" keyTimes="0;0.68;0.98" dur="6s" repeatCount="indefinite"/>
+    <animateMotion dur="6s" repeatCount="indefinite" keyPoints="0;0;1;1" keyTimes="0;0.68;0.98;1" calcMode="linear"><mpath xlink:href="#p10"/></animateMotion>
+  </g>
+
+  <!-- Browser -->
+  <g>
+    <rect class="box" x="40" y="215" width="150" height="90" rx="12"/>
+    <rect x="40" y="229" width="4" height="62" rx="2" fill="#34d399"/>
+    <text class="t" x="60" y="250">Browser</text>
+    <text class="s" x="60" y="271">httpOnly cookies</text>
+    <text class="s" x="60" y="287">access + refresh JWT</text>
+  </g>
+
+  <!-- Nginx -->
+  <g>
+    <rect class="box" x="250" y="215" width="150" height="90" rx="12"/>
+    <rect x="250" y="229" width="4" height="62" rx="2" fill="#34d399"/>
+    <text class="t" x="270" y="250">Nginx</text>
+    <text class="s" x="270" y="271">reverse proxy · TLS</text>
+    <text class="s" x="270" y="287">/ → web · /api → api</text>
+    <rect x="322" y="204" width="72" height="22" rx="11" fill="#0b1020" stroke="#34d399" stroke-opacity="0.7"/>
+    <text class="port" x="358" y="219" text-anchor="middle">:80 · :443</text>
+  </g>
+
+  <!-- Next.js -->
+  <g>
+    <rect class="box" x="460" y="110" width="190" height="90" rx="12"/>
+    <rect x="460" y="124" width="4" height="62" rx="2" fill="#a78bfa"/>
+    <text class="t" x="480" y="145">Next.js (web)</text>
+    <text class="s" x="480" y="166">App Router · Tailwind v4</text>
+    <text class="s" x="480" y="182">shadcn/ui · Zod forms</text>
+    <rect x="584" y="99" width="60" height="22" rx="11" fill="#0b1020" stroke="#34d399" stroke-opacity="0.7"/>
+    <text class="port" x="614" y="114" text-anchor="middle">:3000</text>
+  </g>
+
+  <!-- NestJS -->
+  <g>
+    <rect class="box" x="460" y="320" width="190" height="90" rx="12"/>
+    <rect x="460" y="334" width="4" height="62" rx="2" fill="#a78bfa"/>
+    <text class="t" x="480" y="355">NestJS (api)</text>
+    <text class="s" x="480" y="376">/api/v1 · guards · DTOs</text>
+    <text class="s" x="480" y="392">Swagger at /api/docs</text>
+    <rect x="584" y="309" width="60" height="22" rx="11" fill="#0b1020" stroke="#34d399" stroke-opacity="0.7"/>
+    <text class="port" x="614" y="324" text-anchor="middle">:4000</text>
+  </g>
+
+  <!-- PostgreSQL -->
+  <g>
+    <rect class="box" x="730" y="60" width="190" height="80" rx="12"/>
+    <rect x="730" y="74" width="4" height="52" rx="2" fill="#22d3ee"/>
+    <text class="t" x="750" y="92">PostgreSQL 16</text>
+    <text class="s" x="750" y="113">Prisma 6 · 21 models</text>
+    <rect x="854" y="49" width="60" height="22" rx="11" fill="#0b1020" stroke="#34d399" stroke-opacity="0.7"/>
+    <text class="port" x="884" y="64" text-anchor="middle">:5432</text>
+  </g>
+
+  <!-- MinIO -->
+  <g>
+    <rect class="box" x="730" y="170" width="190" height="80" rx="12"/>
+    <rect x="730" y="184" width="4" height="52" rx="2" fill="#22d3ee"/>
+    <text class="t" x="750" y="202">MinIO</text>
+    <text class="s" x="750" y="223">S3 objects · uploads · reports</text>
+    <rect x="818" y="159" width="96" height="22" rx="11" fill="#0b1020" stroke="#34d399" stroke-opacity="0.7"/>
+    <text class="port" x="866" y="174" text-anchor="middle">:9000 · :9001</text>
+  </g>
+
+  <!-- Redis -->
+  <g>
+    <rect class="box" x="730" y="280" width="190" height="80" rx="12"/>
+    <rect x="730" y="294" width="4" height="52" rx="2" fill="#22d3ee"/>
+    <text class="t" x="750" y="312">Redis</text>
+    <text class="s" x="750" y="333">BullMQ · 8 queues · throttling</text>
+    <rect x="854" y="269" width="60" height="22" rx="11" fill="#0b1020" stroke="#34d399" stroke-opacity="0.7"/>
+    <text class="port" x="884" y="284" text-anchor="middle">:6379</text>
+  </g>
+
+  <!-- Worker -->
+  <g>
+    <rect class="box" x="730" y="390" width="190" height="80" rx="12"/>
+    <rect x="730" y="404" width="4" height="52" rx="2" fill="#f472b6"/>
+    <text class="t" x="750" y="422">Worker</text>
+    <text class="s" x="750" y="443">BullMQ processors · AI agents</text>
+    <text class="s" x="750" y="459">no public port</text>
+  </g>
+
+  <!-- OpenAI -->
+  <g>
+    <rect class="box ext" x="990" y="390" width="170" height="80" rx="12"/>
+    <rect x="990" y="404" width="4" height="52" rx="2" fill="#f472b6"/>
+    <text class="t" x="1010" y="422">OpenAI API</text>
+    <text class="s" x="1010" y="443">gpt-4o-mini (default)</text>
+    <text class="s" x="1010" y="459">gpt-4o (Growth+)</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="11" fill="#94a3b8">
+    <path class="flow req" d="M40,500 L80,500"/><text x="88" y="504">HTTP request</text>
+    <path class="flow data" d="M190,500 L230,500"/><text x="238" y="504">data (Prisma · S3)</text>
+    <path class="flow q" d="M370,500 L410,500"/><text x="418" y="504">queue (BullMQ)</text>
+    <path class="flow ai" d="M530,500 L570,500"/><text x="578" y="504">AI calls</text>
+    <text x="1160" y="504" text-anchor="end" fill="#64748b">the API only enqueues · the worker processes · every job payload carries companyId</text>
+  </g>
+</svg>

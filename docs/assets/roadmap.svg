@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200" width="1200" height="200" role="img" aria-labelledby="rm-title rm-desc" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title id="rm-title">Development roadmap</title>
+  <desc id="rm-desc">Seven phase markers on a timeline. An animated progress fill lands on Phase 1 (Auth and SaaS core, shipped) with a moving shimmer; Phase 2 is up next.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#141a33"/>
+    </linearGradient>
+    <linearGradient id="fillGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="fillClip">
+      <rect x="40" y="88" width="0" height="16" rx="8">
+        <animate attributeName="width" from="0" to="80" begin="0.5s" dur="1.6s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/>
+      </rect>
+    </clipPath>
+    <style>
+      .ph { font-size: 12px; font-weight: 700; fill: #cbd5e1; }
+      .nm { font-size: 11px; fill: #7c8aa5; }
+      .no { font-size: 11px; font-weight: 700; fill: #94a3b8; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="200" fill="url(#bg)"/>
+
+  <!-- heading -->
+  <text x="40" y="38" font-size="18" font-weight="700" fill="#e2e8f0">Development roadmap</text>
+  <g opacity="0">
+    <animate attributeName="opacity" from="0" to="1" begin="2.0s" dur="0.6s" fill="freeze"/>
+    <rect x="1002" y="22" width="158" height="24" rx="12" fill="#0b1020" stroke="#34d399" stroke-opacity="0.6"/>
+    <circle cx="1018" cy="34" r="4" fill="#34d399"/>
+    <text x="1030" y="38" font-size="12" font-weight="600" fill="#a7f3d0">1 / 7 phases shipped</text>
+  </g>
+
+  <!-- track -->
+  <rect x="40" y="92" width="1120" height="8" rx="4" fill="#1a2340"/>
+  <rect x="40" y="92" width="0" height="8" rx="4" fill="url(#fillGrad)">
+    <animate attributeName="width" from="0" to="80" begin="0.5s" dur="1.6s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/>
+  </rect>
+  <!-- shimmer, clipped to the filled part -->
+  <g clip-path="url(#fillClip)">
+    <rect x="-30" y="88" width="50" height="16" fill="url(#shine)">
+      <animate attributeName="x" from="-30" to="130" dur="2.2s" begin="2.1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  <!-- leading spark of the fill -->
+  <circle cx="40" cy="96" r="6" fill="#22d3ee" opacity="0.9">
+    <animate attributeName="cx" from="40" to="120" begin="0.5s" dur="1.6s" fill="freeze" calcMode="spline" keySplines="0.2 0.8 0.2 1"/>
+    <animate attributeName="opacity" values="0.9;0.9;0" keyTimes="0;0.85;1" begin="0.5s" dur="1.9s" fill="freeze"/>
+  </circle>
+
+  <!-- Phase 1 (done) -->
+  <g>
+    <circle cx="120" cy="96" r="13" fill="#121a30" stroke="#2a3555" stroke-width="2">
+      <animate attributeName="fill" to="#7c3aed" begin="1.9s" dur="0.4s" fill="freeze"/>
+      <animate attributeName="stroke" to="#c4b5fd" begin="1.9s" dur="0.4s" fill="freeze"/>
+    </circle>
+    <circle cx="120" cy="96" r="13" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0">
+      <animate attributeName="r" from="13" to="30" begin="2.0s" dur="0.9s" fill="freeze"/>
+      <animate attributeName="opacity" values="0;0.9;0" keyTimes="0;0.1;1" begin="2.0s" dur="0.9s" fill="freeze"/>
+    </circle>
+    <text class="no" x="120" y="100" text-anchor="middle">1<animate attributeName="opacity" to="0" begin="1.9s" dur="0.2s" fill="freeze"/></text>
+    <path d="M113,96 l5,5 l9,-10" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="22" stroke-dashoffset="22">
+      <animate attributeName="stroke-dashoffset" from="22" to="0" begin="2.1s" dur="0.4s" fill="freeze"/>
+    </path>
+    <text class="ph" x="120" y="134" text-anchor="middle">Phase 1</text>
+    <text class="nm" x="120" y="152" text-anchor="middle">Auth &amp; SaaS core</text>
+  </g>
+
+  <!-- Phase 2 (up next) -->
+  <g>
+    <circle cx="280" cy="96" r="13" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0">
+      <animate attributeName="r" values="13;26" dur="2s" begin="2.4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0" dur="2s" begin="2.4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="280" cy="96" r="13" fill="#121a30" stroke="#2a3555" stroke-width="2">
+      <animate attributeName="stroke" to="#22d3ee" begin="2.3s" dur="0.5s" fill="freeze"/>
+    </circle>
+    <text class="no" x="280" y="100" text-anchor="middle">2</text>
+    <g opacity="0">
+      <animate attributeName="opacity" from="0" to="1" begin="2.4s" dur="0.5s" fill="freeze"/>
+      <rect x="250" y="56" width="60" height="18" rx="9" fill="#0e7490" fill-opacity="0.35" stroke="#22d3ee" stroke-opacity="0.7"/>
+      <text x="280" y="69" text-anchor="middle" font-size="10" font-weight="700" fill="#a5f3fc" letter-spacing="0.6">UP NEXT</text>
+    </g>
+    <text class="ph" x="280" y="134" text-anchor="middle">Phase 2</text>
+    <text class="nm" x="280" y="152" text-anchor="middle">Projects &amp; Keywords</text>
+  </g>
+
+  <!-- Phase 3..7 (planned) -->
+  <g>
+    <circle cx="440" cy="96" r="13" fill="#121a30" stroke="#2a3555" stroke-width="2"/>
+    <text class="no" x="440" y="100" text-anchor="middle">3</text>
+    <text class="ph" x="440" y="134" text-anchor="middle">Phase 3</text>
+    <text class="nm" x="440" y="152" text-anchor="middle">AI Content</text>
+  </g>
+  <g>
+    <circle cx="600" cy="96" r="13" fill="#121a30" stroke="#2a3555" stroke-width="2"/>
+    <text class="no" x="600" y="100" text-anchor="middle">4</text>
+    <text class="ph" x="600" y="134" text-anchor="middle">Phase 4</text>
+    <text class="nm" x="600" y="152" text-anchor="middle">SEO &amp; Editor</text>
+  </g>
+  <g>
+    <circle cx="760" cy="96" r="13" fill="#121a30" stroke="#2a3555" stroke-width="2"/>
+    <text class="no" x="760" y="100" text-anchor="middle">5</text>
+    <text class="ph" x="760" y="134" text-anchor="middle">Phase 5</text>
+    <text class="nm" x="760" y="152" text-anchor="middle">Repurposing</text>
+  </g>
+  <g>
+    <circle cx="920" cy="96" r="13" fill="#121a30" stroke="#2a3555" stroke-width="2"/>
+    <text class="no" x="920" y="100" text-anchor="middle">6</text>
+    <text class="ph" x="920" y="134" text-anchor="middle">Phase 6</text>
+    <text class="nm" x="920" y="152" text-anchor="middle">Analytics &amp; Integrations</text>
+  </g>
+  <g>
+    <circle cx="1080" cy="96" r="13" fill="#121a30" stroke="#2a3555" stroke-width="2"/>
+    <text class="no" x="1080" y="100" text-anchor="middle">7</text>
+    <text class="ph" x="1080" y="134" text-anchor="middle">Phase 7</text>
+    <text class="nm" x="1080" y="152" text-anchor="middle">Billing &amp; Production</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="11" fill="#64748b">
+    <circle cx="46" cy="184" r="4" fill="#7c3aed"/>
+    <text x="56" y="188">shipped</text>
+    <circle cx="116" cy="184" r="4" fill="none" stroke="#22d3ee" stroke-width="1.5"/>
+    <text x="126" y="188">up next</text>
+    <circle cx="186" cy="184" r="4" fill="none" stroke="#2a3555" stroke-width="1.5"/>
+    <text x="196" y="188">planned</text>
+    <text x="1160" y="188" text-anchor="end">full checklist in docs/ROADMAP.md</text>
+  </g>
+</svg>

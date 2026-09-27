@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360" role="img" aria-labelledby="ag-title ag-desc" font-family="ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <title id="ag-title">AI agent orchestration</title>
+  <desc id="ag-desc">An Orchestrator in the centre with Research, SEO, Writing and Quality agents orbiting it. A data packet travels from the orchestrator to each agent and back while inputs flow in from the left and outputs flow out to the right.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1020"/>
+      <stop offset="1" stop-color="#141a33"/>
+    </linearGradient>
+    <radialGradient id="orch" cx="0.4" cy="0.35" r="0.8">
+      <stop offset="0" stop-color="#a78bfa"/>
+      <stop offset="0.6" stop-color="#6d28d9"/>
+      <stop offset="1" stop-color="#3b0f8f"/>
+    </radialGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4"/></filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+    <style>
+      .h { font-size: 10px; font-weight: 700; letter-spacing: 1.4px; fill: #64748b; }
+      .it { font-size: 12px; fill: #cbd5e1; }
+      .an { font-size: 12px; font-weight: 700; fill: #e2e8f0; }
+      .as { font-size: 9px; fill: #94a3b8; }
+      .flow { fill: none; stroke: #475569; stroke-width: 1.5; stroke-dasharray: 6 6; animation: dash 1.4s linear infinite; }
+      @keyframes dash { to { stroke-dashoffset: -24; } }
+    </style>
+  </defs>
+
+  <rect width="1200" height="360" fill="url(#bg)"/>
+
+  <!-- heading -->
+  <text x="40" y="36" font-size="18" font-weight="700" fill="#e2e8f0">AI agent orchestration</text>
+  <text x="1160" y="36" text-anchor="end" font-size="11" fill="#7c8aa5">the Orchestrator plans the workflow, routes work to specialist agents and retries failures</text>
+
+  <!-- inputs -->
+  <g>
+    <text class="h" x="60" y="92">INPUTS</text>
+    <circle cx="66" cy="114" r="3" fill="#22d3ee"/><text class="it" x="80" y="118">Topic &amp; seed keywords</text>
+    <circle cx="66" cy="140" r="3" fill="#22d3ee"/><text class="it" x="80" y="144">Website business profile</text>
+    <circle cx="66" cy="166" r="3" fill="#22d3ee"/><text class="it" x="80" y="170">Brand voice &amp; audience</text>
+    <circle cx="66" cy="192" r="3" fill="#22d3ee"/><text class="it" x="80" y="196">Target keyword / cluster</text>
+    <circle cx="66" cy="218" r="3" fill="#22d3ee"/><text class="it" x="80" y="222">Plan limits &amp; AI credits</text>
+  </g>
+  <path class="flow" marker-end="url(#arrow)" d="M290,180 L450,180"/>
+
+  <!-- outputs -->
+  <g text-anchor="end">
+    <text class="h" x="1140" y="92">OUTPUTS</text>
+    <circle cx="1134" cy="114" r="3" fill="#34d399"/><text class="it" x="1120" y="118">Keyword clusters &amp; search intent</text>
+    <circle cx="1134" cy="140" r="3" fill="#34d399"/><text class="it" x="1120" y="144">Content brief (outline, FAQs)</text>
+    <circle cx="1134" cy="166" r="3" fill="#34d399"/><text class="it" x="1120" y="170">Draft with SEO metadata</text>
+    <circle cx="1134" cy="192" r="3" fill="#34d399"/><text class="it" x="1120" y="196">Quality report &amp; score</text>
+    <circle cx="1134" cy="218" r="3" fill="#34d399"/><text class="it" x="1120" y="222">AIUsage row per call</text>
+  </g>
+  <path class="flow" marker-end="url(#arrow)" d="M750,180 L910,180"/>
+
+  <!-- orbit ring (counter-rotating dashes) -->
+  <circle cx="600" cy="180" r="118" fill="none" stroke="#2a3555" stroke-width="1.5" stroke-dasharray="3 9">
+    <animateTransform attributeName="transform" type="rotate" from="0 600 180" to="-360 600 180" dur="60s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- rotating system -->
+  <g>
+    <animateTransform attributeName="transform" type="rotate" from="0 600 180" to="360 600 180" dur="24s" repeatCount="indefinite"/>
+
+    <!-- spokes -->
+    <g stroke="#2a3555" stroke-width="1">
+      <line x1="600" y1="180" x2="718" y2="180"/>
+      <line x1="600" y1="180" x2="600" y2="62"/>
+      <line x1="600" y1="180" x2="482" y2="180"/>
+      <line x1="600" y1="180" x2="600" y2="298"/>
+    </g>
+
+    <!-- arrival pulses -->
+    <circle cx="718" cy="180" r="36" fill="none" stroke="#22d3ee" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="36;36;54;54" keyTimes="0;0.125;0.19;1" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.125;0.19;1" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="600" cy="62" r="36" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="36;36;54;54" keyTimes="0;0.375;0.44;1" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.375;0.44;1" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="482" cy="180" r="36" fill="none" stroke="#34d399" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="36;36;54;54" keyTimes="0;0.625;0.69;1" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.625;0.69;1" dur="8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="600" cy="298" r="36" fill="none" stroke="#f472b6" stroke-width="2" opacity="0">
+      <animate attributeName="r" values="36;36;54;54" keyTimes="0;0.875;0.94;1" dur="8s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0;0.9;0;0" keyTimes="0;0.875;0.94;1" dur="8s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Research agent (labels counter-rotate so they stay upright) -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0 718 180" to="-360 718 180" dur="24s" repeatCount="indefinite"/>
+      <circle cx="718" cy="180" r="36" fill="#121a30" stroke="#22d3ee" stroke-width="2"/>
+      <text class="an" x="718" y="178" text-anchor="middle">Research</text>
+      <text class="as" x="718" y="192" text-anchor="middle">opportunities</text>
+    </g>
+    <!-- SEO agent -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0 600 62" to="-360 600 62" dur="24s" repeatCount="indefinite"/>
+      <circle cx="600" cy="62" r="36" fill="#121a30" stroke="#a78bfa" stroke-width="2"/>
+      <text class="an" x="600" y="60" text-anchor="middle">SEO</text>
+      <text class="as" x="600" y="74" text-anchor="middle">meta &amp; headings</text>
+    </g>
+    <!-- Writing agent -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0 482 180" to="-360 482 180" dur="24s" repeatCount="indefinite"/>
+      <circle cx="482" cy="180" r="36" fill="#121a30" stroke="#34d399" stroke-width="2"/>
+      <text class="an" x="482" y="178" text-anchor="middle">Writing</text>
+      <text class="as" x="482" y="192" text-anchor="middle">drafts</text>
+    </g>
+    <!-- Quality agent -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0 600 298" to="-360 600 298" dur="24s" repeatCount="indefinite"/>
+      <circle cx="600" cy="298" r="36" fill="#121a30" stroke="#f472b6" stroke-width="2"/>
+      <text class="an" x="600" y="296" text-anchor="middle">Quality</text>
+      <text class="as" x="600" y="310" text-anchor="middle">checks &amp; score</text>
+    </g>
+
+    <!-- data packet: orchestrator → agent → orchestrator, one agent at a time -->
+    <g>
+      <circle r="9" fill="#ffffff" opacity="0.45" filter="url(#glow)"/>
+      <circle r="4" fill="#ffffff"/>
+      <animateMotion dur="8s" repeatCount="indefinite" path="M600,180 L718,180 L600,180 L600,62 L600,180 L482,180 L600,180 L600,298 L600,180"/>
+    </g>
+  </g>
+
+  <!-- orchestrator (static, on top) -->
+  <circle cx="600" cy="180" r="62" fill="none" stroke="#a78bfa" stroke-width="2" opacity="0">
+    <animate attributeName="r" values="58;74" dur="2.4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0" dur="2.4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="600" cy="180" r="56" fill="url(#orch)" stroke="#c4b5fd" stroke-width="2"/>
+  <text x="600" y="177" text-anchor="middle" font-size="15" font-weight="800" fill="#ffffff">Orchestrator</text>
+  <text x="600" y="194" text-anchor="middle" font-size="10" fill="#ddd6fe">plan · route · retry</text>
+
+  <!-- footer -->
+  <text x="600" y="346" text-anchor="middle" font-size="11" fill="#64748b">Every agent call is recorded as an AIUsage row (model · feature · tokens · estimated cost) and counted against the company's plan credits.</text>
+</svg>
