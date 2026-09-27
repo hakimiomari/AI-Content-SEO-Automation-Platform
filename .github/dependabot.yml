@@ -1,0 +1,50 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: UTC
+    open-pull-requests-limit: 10
+    versioning-strategy: increase
+    commit-message:
+      prefix: 'chore(deps)'
+    groups:
+      nestjs:
+        patterns: ['@nestjs/*']
+      next:
+        patterns: ['next', 'react', 'react-dom', '@types/react', '@types/react-dom']
+      prisma:
+        patterns: ['prisma', '@prisma/*']
+      lint:
+        patterns: ['eslint', '@eslint/*', 'typescript-eslint', 'prettier']
+      testing:
+        patterns: ['vitest', '@vitest/*', 'jest', '@types/jest']
+    ignore:
+      # Major bumps of framework packages are handled manually.
+      - dependency-name: 'next'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@nestjs/*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: UTC
+    commit-message:
+      prefix: 'chore(ci)'
+
+  - package-ecosystem: docker
+    directory: '/docker'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: UTC
+    commit-message:
+      prefix: 'chore(docker)'
