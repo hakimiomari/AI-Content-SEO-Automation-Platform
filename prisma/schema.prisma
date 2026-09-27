@@ -1,0 +1,647 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Content & SEO Automation Platform — Prisma schema
+// Multi-tenant: every business entity hangs off a Company (tenant).
+// ─────────────────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../packages/database/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Enums ─────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  COMPANY_ADMIN
+  CONTENT_MANAGER
+  COMPANY_USER
+}
+
+enum Plan {
+  FREE
+  STARTER
+  GROWTH
+  AGENCY
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
+enum ProjectStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum KeywordStatus {
+  DISCOVERED
+  SHORTLISTED
+  PLANNED
+  IN_PROGRESS
+  PUBLISHED
+  IGNORED
+}
+
+enum SearchIntent {
+  INFORMATIONAL
+  NAVIGATIONAL
+  COMMERCIAL
+  TRANSACTIONAL
+}
+
+enum ContentType {
+  BLOG_POST
+  LANDING_PAGE
+  PRODUCT_PAGE
+  GUIDE
+  LISTICLE
+  COMPARISON
+  NEWS
+}
+
+enum ContentStatus {
+  BRIEF
+  GENERATING
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  FAILED
+  ARCHIVED
+}
+
+enum BriefStatus {
+  DRAFT
+  READY
+  USED
+}
+
+enum SocialPlatform {
+  FACEBOOK
+  LINKEDIN
+  INSTAGRAM
+  X
+  YOUTUBE
+  EMAIL_NEWSLETTER
+  SHORT_VIDEO
+}
+
+enum SocialPostStatus {
+  DRAFT
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+enum ScheduleStatus {
+  PENDING
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELED
+}
+
+enum IntegrationProvider {
+  WORDPRESS
+  GOOGLE_SEARCH_CONSOLE
+  LINKEDIN
+  FACEBOOK
+  YOUTUBE
+  SHOPIFY
+  WEBFLOW
+}
+
+enum IntegrationStatus {
+  CONNECTED
+  DISCONNECTED
+  ERROR
+  EXPIRED
+}
+
+enum AIFeature {
+  KEYWORD_RESEARCH
+  WEBSITE_ANALYSIS
+  CONTENT_BRIEF
+  CONTENT_GENERATION
+  CONTENT_EDIT
+  SEO_ANALYSIS
+  REPURPOSING
+  QUALITY_CHECK
+  REPORT
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  PUBLISH
+  APPROVE
+  INVITE
+  BILLING
+}
+
+// ───────────────────────────── Tenant & Identity ─────────────────────────────
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  logoUrl     String?
+  industry    String?
+  description String?
+  timezone    String   @default("UTC")
+  locale      String   @default("en")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users         User[]
+  websites      Website[]
+  projects      Project[]
+  integrations  Integration[]
+  subscription  Subscription?
+  aiUsage       AIUsage[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+  files         FileObject[]
+
+  @@index([slug])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  name          String
+  avatarUrl     String?
+  role          Role      @default(COMPANY_USER)
+  isActive      Boolean   @default(true)
+  emailVerified DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  refreshTokens   RefreshToken[]
+  createdContents Content[]        @relation("ContentAuthor")
+  contentVersions ContentVersion[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
+  aiUsage         AIUsage[]
+  invitesSent     Invitation[]     @relation("InvitedBy")
+
+  @@index([companyId])
+  @@index([email])
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model Invitation {
+  id         String    @id @default(cuid())
+  email      String
+  role       Role      @default(COMPANY_USER)
+  token      String    @unique
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  companyId   String
+  invitedById String
+  invitedBy   User   @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, email])
+  @@index([token])
+}
+
+// ───────────────────────────── Websites & Projects ─────────────────────────────
+
+model Website {
+  id              String   @id @default(cuid())
+  name            String
+  url             String
+  domain          String
+  businessProfile Json?    // audience, tone, products, USPs, competitors
+  brandVoice      String?
+  language        String   @default("en")
+  country         String   @default("US")
+  lastAnalyzedAt  DateTime?
+  analysis        Json?    // output of the website-analysis job
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  projects     Project[]
+  integrations Integration[]
+  analytics    AnalyticsSnapshot[]
+
+  @@unique([companyId, domain])
+  @@index([companyId])
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  topic       String?
+  goals       Json?
+  status      ProjectStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  websiteId String?
+  website   Website? @relation(fields: [websiteId], references: [id], onDelete: SetNull)
+
+  keywords        Keyword[]
+  keywordClusters KeywordCluster[]
+  briefs          ContentBrief[]
+  contents        Content[]
+  seoAnalyses     SEOAnalysis[]
+  socialPosts     SocialPost[]
+  schedules       Schedule[]
+
+  @@index([companyId])
+  @@index([websiteId])
+}
+
+// ───────────────────────────── Keywords ─────────────────────────────
+
+model KeywordCluster {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  intent      SearchIntent?
+  pillar      Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  keywords Keyword[]
+  briefs   ContentBrief[]
+
+  @@index([projectId])
+}
+
+model Keyword {
+  id           String        @id @default(cuid())
+  term         String
+  volume       Int?
+  difficulty   Int?          // 0-100
+  cpc          Decimal?      @db.Decimal(10, 2)
+  intent       SearchIntent?
+  status       KeywordStatus @default(DISCOVERED)
+  opportunity  Int?          // 0-100 heuristic score from the Research Agent
+  source       String?       // ai | manual | gsc | import
+  metadata     Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  clusterId String?
+  cluster   KeywordCluster? @relation(fields: [clusterId], references: [id], onDelete: SetNull)
+
+  briefs   ContentBrief[]
+  contents Content[]
+
+  @@unique([projectId, term])
+  @@index([projectId, status])
+  @@index([clusterId])
+}
+
+// ───────────────────────────── Content pipeline ─────────────────────────────
+
+model ContentBrief {
+  id            String      @id @default(cuid())
+  title         String
+  contentType   ContentType @default(BLOG_POST)
+  intent        SearchIntent?
+  audience      String?
+  tone          String?
+  outline       Json?       // headings tree
+  targetWords   Int         @default(1200)
+  secondaryKeywords String[]
+  questions     String[]    // People-also-ask / FAQ candidates
+  competitors   Json?
+  notes         String?
+  status        BriefStatus @default(DRAFT)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  keywordId String?
+  keyword   Keyword? @relation(fields: [keywordId], references: [id], onDelete: SetNull)
+  clusterId String?
+  cluster   KeywordCluster? @relation(fields: [clusterId], references: [id], onDelete: SetNull)
+
+  contents Content[]
+
+  @@index([projectId])
+}
+
+model Content {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String
+  contentType     ContentType   @default(BLOG_POST)
+  status          ContentStatus @default(DRAFT)
+  excerpt         String?
+  metaTitle       String?
+  metaDescription String?
+  featuredImage   String?
+  wordCount       Int           @default(0)
+  seoScore        Int?
+  language        String        @default("en")
+  publishedUrl    String?
+  publishedAt     DateTime?
+  approvedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  briefId   String?
+  brief     ContentBrief? @relation(fields: [briefId], references: [id], onDelete: SetNull)
+  keywordId String?
+  keyword   Keyword? @relation(fields: [keywordId], references: [id], onDelete: SetNull)
+  authorId  String?
+  author    User? @relation("ContentAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  currentVersionId String? @unique
+  currentVersion   ContentVersion? @relation("CurrentVersion", fields: [currentVersionId], references: [id], onDelete: SetNull)
+
+  versions    ContentVersion[]
+  seoAnalyses SEOAnalysis[]
+  socialPosts SocialPost[]
+  schedules   Schedule[]
+
+  @@unique([projectId, slug])
+  @@index([projectId, status])
+}
+
+model ContentVersion {
+  id        String   @id @default(cuid())
+  version   Int
+  body      String   // HTML or Markdown
+  bodyJson  Json?    // editor document (Tiptap JSON)
+  summary   String?  // what changed
+  source    String   @default("user") // user | ai:rewrite | ai:improve | ai:generate ...
+  createdAt DateTime @default(now())
+
+  contentId String
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  createdById String?
+  createdBy   User? @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  currentOf Content? @relation("CurrentVersion")
+
+  @@unique([contentId, version])
+  @@index([contentId])
+}
+
+model SEOAnalysis {
+  id        String   @id @default(cuid())
+  score     Int
+  checks    Json     // [{ key, label, passed, weight, message }]
+  suggestions Json?
+  keyword   String?
+  createdAt DateTime @default(now())
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contentId String
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@index([projectId])
+}
+
+model SocialPost {
+  id          String           @id @default(cuid())
+  platform    SocialPlatform
+  body        String
+  hashtags    String[]
+  mediaUrls   String[]
+  status      SocialPostStatus @default(DRAFT)
+  publishedUrl String?
+  publishedAt DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contentId String?
+  content   Content? @relation(fields: [contentId], references: [id], onDelete: SetNull)
+
+  schedules Schedule[]
+
+  @@index([projectId, platform])
+  @@index([contentId])
+}
+
+model Schedule {
+  id           String         @id @default(cuid())
+  scheduledFor DateTime
+  status       ScheduleStatus @default(PENDING)
+  attempts     Int            @default(0)
+  lastError    String?
+  result       Json?
+  jobId        String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  projectId     String
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  contentId     String?
+  content       Content? @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  socialPostId  String?
+  socialPost    SocialPost? @relation(fields: [socialPostId], references: [id], onDelete: Cascade)
+  integrationId String?
+  integration   Integration? @relation(fields: [integrationId], references: [id], onDelete: SetNull)
+
+  @@index([scheduledFor, status])
+  @@index([projectId])
+}
+
+// ───────────────────────────── Integrations & Analytics ─────────────────────────────
+
+model Integration {
+  id          String              @id @default(cuid())
+  provider    IntegrationProvider
+  name        String
+  status      IntegrationStatus   @default(CONNECTED)
+  credentials String              // AES-256-GCM encrypted JSON
+  config      Json?
+  lastSyncAt  DateTime?
+  lastError   String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  websiteId String?
+  website   Website? @relation(fields: [websiteId], references: [id], onDelete: SetNull)
+
+  schedules Schedule[]
+
+  @@index([companyId, provider])
+}
+
+model AnalyticsSnapshot {
+  id          String   @id @default(cuid())
+  date        DateTime @db.Date
+  page        String   @default("")
+  query       String   @default("")
+  clicks      Int      @default(0)
+  impressions Int      @default(0)
+  ctr         Float    @default(0)
+  position    Float    @default(0)
+  source      String   @default("gsc")
+  createdAt   DateTime @default(now())
+
+  websiteId String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@unique([websiteId, date, page, query, source])
+  @@index([websiteId, date])
+}
+
+// ───────────────────────────── AI usage, billing, ops ─────────────────────────────
+
+model AIUsage {
+  id               String    @id @default(cuid())
+  feature          AIFeature
+  model            String
+  promptTokens     Int       @default(0)
+  completionTokens Int       @default(0)
+  totalTokens      Int       @default(0)
+  estimatedCostUsd Decimal   @default(0) @db.Decimal(12, 6)
+  durationMs       Int?
+  jobId            String?
+  metadata         Json?
+  createdAt        DateTime  @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
+  @@index([feature])
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  plan                 Plan               @default(FREE)
+  status               SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  currentPeriodStart   DateTime           @default(now())
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  // Usage counters, reset each billing period
+  wordsUsed            Int                @default(0)
+  aiCreditsUsed        Int                @default(0)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  companyId String  @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType @default(INFO)
+  title     String
+  message   String
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@index([companyId])
+}
+
+model FileObject {
+  id        String   @id @default(cuid())
+  bucket    String
+  key       String
+  fileName  String
+  mimeType  String
+  size      Int
+  url       String?
+  createdAt DateTime @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([bucket, key])
+  @@index([companyId])
+}
+
+model AuditLog {
+  id         String      @id @default(cuid())
+  action     AuditAction
+  entity     String      // e.g. "Content", "Project"
+  entityId   String?
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime    @default(now())
+
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, createdAt])
+  @@index([entity, entityId])
+}

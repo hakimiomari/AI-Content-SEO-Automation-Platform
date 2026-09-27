@@ -1,0 +1,23 @@
+{
+  "name": "@acsp/database",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Prisma client for the platform (generated from /prisma/schema.prisma).",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "generated"
+  ],
+  "scripts": {
+    "generate": "prisma generate --schema ../../prisma/schema.prisma",
+    "clean": "rm -rf generated"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.16.0"
+  }
+}
