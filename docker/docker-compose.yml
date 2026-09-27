@@ -1,0 +1,90 @@
+# Local development infrastructure ONLY (apps run on the host with `pnpm dev`).
+# Usage from the repo root:  pnpm docker:up   |   docker compose -f docker/docker-compose.yml up -d
+# Variable substitution (${...}) reads the shell and docker/.env; container env comes from ../.env.
+# Defaults below match .env.example so it works out of the box.
+name: acsp
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: acsp-postgres
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-platform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-platform}
+      POSTGRES_DB: ${POSTGRES_DB:-platform}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: acsp-redis
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  minio:
+    image: minio/minio
+    container_name: acsp-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    env_file: ../.env
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    ports:
+      - '${MINIO_PORT:-9000}:9000'
+      - '${MINIO_CONSOLE_PORT:-9001}:9001'
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # One-shot: creates the uploads bucket and makes it publicly readable (download policy).
+  minio-init:
+    image: minio/mc
+    container_name: acsp-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    env_file: ../.env
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-platform-uploads}
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        set -e
+        mc alias set local http://minio:9000 "$$MINIO_ACCESS_KEY" "$$MINIO_SECRET_KEY"
+        mc mb --ignore-existing "local/$$MINIO_BUCKET"
+        mc anonymous set download "local/$$MINIO_BUCKET"
+        echo "Bucket $$MINIO_BUCKET ready (public download)"
+    restart: 'no'
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:

@@ -1,0 +1,56 @@
+# syntax=docker/dockerfile:1.7
+# Build context is the repository root:  docker build -f docker/Dockerfile.api .
+ARG NODE_VERSION=22
+ARG PNPM_VERSION=11.22.0
+
+# ───────────── base: node + pnpm (corepack) ─────────────
+FROM node:${NODE_VERSION}-alpine AS base
+ARG PNPM_VERSION
+ENV PNPM_HOME=/pnpm \
+    PATH=/pnpm:$PATH \
+    CI=true \
+    COREPACK_ENABLE_DOWNLOAD_PROMPT=0 \
+    TURBO_TELEMETRY_DISABLED=1 \
+    NEXT_TELEMETRY_DISABLED=1
+RUN apk add --no-cache libc6-compat openssl \
+ && npm install -g corepack@latest \
+ && corepack enable \
+ && corepack prepare pnpm@${PNPM_VERSION} --activate
+WORKDIR /app
+
+# ───────────── deps: install with the lockfile only ─────────────
+FROM base AS deps
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc turbo.json tsconfig.base.json ./
+COPY apps/api/package.json apps/api/
+COPY apps/web/package.json apps/web/
+COPY apps/worker/package.json apps/worker/
+COPY packages/shared/package.json packages/shared/
+COPY packages/database/package.json packages/database/index.js packages/database/index.d.ts packages/database/
+COPY prisma ./prisma
+RUN --mount=type=cache,id=pnpm-store,target=/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# ───────────── build ─────────────
+FROM deps AS build
+COPY . .
+RUN pnpm db:generate \
+ && pnpm turbo run build --filter=@acsp/api...
+
+# ───────────── runner ─────────────
+FROM node:${NODE_VERSION}-alpine AS runner
+ENV NODE_ENV=production \
+    API_PORT=4000
+RUN apk add --no-cache libc6-compat openssl wget \
+ && addgroup -S app && adduser -S app -G app
+WORKDIR /app
+COPY --from=build --chown=app:app /app/package.json /app/pnpm-workspace.yaml ./
+COPY --from=build --chown=app:app /app/node_modules ./node_modules
+COPY --from=build --chown=app:app /app/packages ./packages
+COPY --from=build --chown=app:app /app/prisma ./prisma
+COPY --from=build --chown=app:app /app/apps/api/package.json ./apps/api/package.json
+COPY --from=build --chown=app:app /app/apps/api/node_modules ./apps/api/node_modules
+COPY --from=build --chown=app:app /app/apps/api/dist ./apps/api/dist
+USER app
+EXPOSE 4000
+# Apply pending migrations, then start the API.
+CMD ["sh", "-c", "npx prisma migrate deploy --schema prisma/schema.prisma && node apps/api/dist/main.js"]

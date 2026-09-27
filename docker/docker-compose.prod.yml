@@ -1,0 +1,242 @@
+# Production stack: infra + api + web + worker behind nginx, with daily Postgres backups.
+# Usage from the repo root:  pnpm docker:prod   |   docker compose -f docker/docker-compose.prod.yml up -d --build
+# Secrets come from ../.env (copy .env.example and change every secret). Service hostnames
+# (postgres/redis/minio) override the localhost values from .env for the containers.
+name: acsp
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: '10m'
+    max-file: '3'
+
+x-app-env: &app-env
+  NODE_ENV: production
+  DATABASE_URL: postgresql://${POSTGRES_USER:-platform}:${POSTGRES_PASSWORD:-platform}@postgres:5432/${POSTGRES_DB:-platform}?schema=public
+  REDIS_URL: redis://redis:6379
+  MINIO_ENDPOINT: minio
+  MINIO_PORT: '9000'
+  MINIO_USE_SSL: 'false'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: acsp-postgres
+    restart: unless-stopped
+    logging: *default-logging
+    env_file: ../.env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-platform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-platform}
+      POSTGRES_DB: ${POSTGRES_DB:-platform}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
+
+  redis:
+    image: redis:7-alpine
+    container_name: acsp-redis
+    restart: unless-stopped
+    logging: *default-logging
+    command: ['redis-server', '--appendonly', 'yes', '--maxmemory-policy', 'noeviction']
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  minio:
+    image: minio/minio
+    container_name: acsp-minio
+    restart: unless-stopped
+    logging: *default-logging
+    command: server /data --console-address ":9001"
+    env_file: ../.env
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY:-minioadmin}
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  minio-init:
+    image: minio/mc
+    container_name: acsp-minio-init
+    logging: *default-logging
+    depends_on:
+      minio:
+        condition: service_healthy
+    env_file: ../.env
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin}
+      MINIO_BUCKET: ${MINIO_BUCKET:-platform-uploads}
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        set -e
+        mc alias set local http://minio:9000 "$$MINIO_ACCESS_KEY" "$$MINIO_SECRET_KEY"
+        mc mb --ignore-existing "local/$$MINIO_BUCKET"
+        mc anonymous set download "local/$$MINIO_BUCKET"
+        echo "Bucket $$MINIO_BUCKET ready (public download)"
+    restart: 'no'
+
+  api:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.api
+    image: acsp/api:latest
+    container_name: acsp-api
+    restart: unless-stopped
+    logging: *default-logging
+    env_file: ../.env
+    environment:
+      <<: *app-env
+      API_PORT: '4000'
+    expose:
+      - '4000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      # Expects the API to expose GET /api/v1/health (adjust if the health route differs).
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:4000/api/v1/health']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  worker:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.worker
+    image: acsp/worker:latest
+    container_name: acsp-worker
+    restart: unless-stopped
+    logging: *default-logging
+    env_file: ../.env
+    environment:
+      <<: *app-env
+      WORKER_HEALTH_PORT: '4001'
+    expose:
+      - '4001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      api:
+        condition: service_started # api runs `prisma migrate deploy` first
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:4001/health']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.web
+      args:
+        # Baked into the client bundle at build time; the browser talks to the API through nginx.
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api/v1}
+        NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-AI Content & SEO Platform}
+    image: acsp/web:latest
+    container_name: acsp-web
+    restart: unless-stopped
+    logging: *default-logging
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      HOSTNAME: 0.0.0.0
+      NEXT_TELEMETRY_DISABLED: '1'
+      API_URL: http://api:4000
+    expose:
+      - '3000'
+    depends_on:
+      api:
+        condition: service_started
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: acsp-nginx
+    restart: unless-stopped
+    logging: *default-logging
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # TLS (see the commented server block in conf.d/default.conf):
+      # - ./data/certbot/conf:/etc/letsencrypt:ro
+      # - ./data/certbot/www:/var/www/certbot:ro
+    depends_on:
+      web:
+        condition: service_started
+      api:
+        condition: service_started
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1/nginx-health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  backup:
+    image: prodrigestivill/postgres-backup-local:16
+    container_name: acsp-backup
+    restart: unless-stopped
+    logging: *default-logging
+    user: postgres:postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-platform}
+      POSTGRES_USER: ${POSTGRES_USER:-platform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-platform}
+      POSTGRES_EXTRA_OPTS: '-Z6 --schema=public --blobs'
+      SCHEDULE: '@daily'
+      BACKUP_ON_START: 'TRUE'
+      BACKUP_KEEP_DAYS: '7'
+      BACKUP_KEEP_WEEKS: '0'
+      BACKUP_KEEP_MONTHS: '0'
+      HEALTHCHECK_PORT: '8080'
+      TZ: UTC
+    volumes:
+      - ./data/backups:/backups
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8080/']
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
